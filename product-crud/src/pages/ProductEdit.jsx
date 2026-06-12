@@ -44,34 +44,32 @@ function ProductEdit() {
 
   const handleSubmit = async (data) => {
     try {
-      await updateProduct(id, data);
+      console.log("Updating product with data:", data);
+      console.log("Product ID:", id);
+
+      const response = await updateProduct(id, data);
+      console.log("Update response:", response);
 
       alert("Updated Successfully");
-
       navigate("/");
     } catch (error) {
-      console.error(error);
-      alert("Failed to update product.");
+      console.error("=== FULL ERROR DETAILS ===");
+      console.error("Error object:", error);
+      console.error("Error response:", error.response);
+      console.error("Error response data:", error.response?.data);
+      console.error("Error status:", error.response?.status);
+
+      // Show detailed error message
+      if (error.response?.data?.errors) {
+        const errorMessages = Object.values(error.response.data.errors).flat();
+        alert(`Validation failed:\n${errorMessages.join('\n')}`);
+      } else if (error.response?.data?.message) {
+        alert(`Failed to update product: ${error.response.data.message}`);
+      } else {
+        alert(`Failed to update product: ${error.message}`);
+      }
     }
   };
-
-  if (loading) {
-    return <div className="container"><h2>Loading product details...</h2></div>;
-  }
-
-  if (error) {
-    return (
-      <div className="container">
-        <div className="card">
-          <h2>Error</h2>
-          <p>{error}</p>
-          <button className="btn btn-primary" onClick={() => navigate("/")}>
-            Back to List
-          </button>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="container">
